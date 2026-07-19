@@ -1,0 +1,743 @@
+[
+  {
+    "scheme_id": "IN-HEALTH-001",
+    "scheme_name": "Ayushman Bharat (PM-JAY)",
+    "category": "Healthcare & Life Safety",
+    "description": "Provides cashless health insurance coverage for eligible families.",
+    "benefit": "Cashless treatment up to scheme limits.",
+    "attributes": {
+      "ration_card_type": ["PHH", "SPHH", "AAY", "BPL"],
+      "age_minimum": 0,
+      "special_auto_include_age": 70
+    },
+    "validation_logic": "True if ration_card_type matches array values, OR if citizen age >= special_auto_include_age.",
+    "required_documents": [
+      "Aadhaar Card",
+      "Ration Card"
+    ],
+    "application_steps": [
+      "Visit an empanelled hospital or Ayushman Mitra Desk.",
+      "Verify Aadhaar and eligibility.",
+      "Receive cashless treatment."
+    ],
+    "contact": {
+      "helpline": "14555 / 1800-11-4477",
+      "office": "Ayushman Mitra Desk",
+      "website": ""
+    }
+  },
+  {
+    "scheme_id": "IN-FINANCE-002",
+    "scheme_name": "PM Suraksha Bima Yojana (PMSBY)",
+    "category": "Healthcare & Life Safety",
+    "description": "Accident insurance scheme.",
+    "benefit": "Accidental insurance coverage.",
+    "attributes": {
+      "age_minimum": 18,
+      "age_maximum": 70,
+      "has_active_bank_savings_account": true
+    },
+    "validation_logic": "True if citizen age falls between 18 and 70 (inclusive) AND has_active_bank_savings_account is true.",
+    "required_documents": [
+      "Aadhaar Card",
+      "Bank Passbook"
+    ],
+    "application_steps": [
+      "Visit your bank.",
+      "Submit consent form.",
+      "Premium is auto-debited."
+    ],
+    "contact": {
+      "helpline": "1800-180-1111",
+      "office": "Savings Account Bank Branch Counter",
+      "website": ""
+    }
+  },
+  {
+    "scheme_id": "IN-FINANCE-003",
+    "scheme_name": "PM Jeevan Jyoti Bima Yojana (PMJJBY)",
+    "category": "Healthcare & Life Safety",
+    "description": "Life insurance scheme.",
+    "benefit": "Life insurance coverage.",
+    "attributes": {
+      "age_minimum": 18,
+      "age_maximum": 50,
+      "has_active_bank_savings_account": true
+    },
+    "validation_logic": "True if citizen age falls between 18 and 50 (inclusive) AND has_active_bank_savings_account is true.",
+    "required_documents": [
+      "Aadhaar Card",
+      "Bank Passbook"
+    ],
+    "application_steps": [
+      "Visit your bank.",
+      "Enroll in PMJJBY.",
+      "Premium is auto-debited."
+    ],
+    "contact": {
+      "helpline": "1800-180-1111",
+      "office": "Savings Account Bank Branch Counter",
+      "website": ""
+    }
+  },
+  {
+    "scheme_id": "IN-AGRI-004",
+    "scheme_name": "PM Kisan Samman Nidhi",
+    "category": "Agriculture & Rural Safety Nets",
+    "description": "Income support for eligible farmer families.",
+    "benefit": "₹6,000 per year.",
+    "attributes": {
+      "is_landholder": true,
+      "institutional_landholder_flag": false,
+      "taxpayer_last_year_flag": false
+    },
+    "validation_logic": "True if is_landholder is true AND institutional_landholder_flag is false AND taxpayer_last_year_flag is false.",
+    "required_documents": [
+      "Aadhaar Card",
+      "Land Record",
+      "Bank Passbook"
+    ],
+    "application_steps": [
+      "Visit Agriculture Office.",
+      "Submit required documents.",
+      "Verification is completed.",
+      "Benefits are transferred to bank account."
+    ],
+    "contact": {
+      "helpline": "155261 / 1800-180-1551",
+      "office": "District Agriculture Office / Local Lekhpal or Patwari",
+      "website": ""
+    }
+  },
+  {
+    "scheme_id": "IN-LABOUR-005",
+    "scheme_name": "MGNREGA",
+    "category": "Agriculture & Rural Safety Nets",
+    "description": "Employment guarantee programme for rural households.",
+    "benefit": "Guaranteed wage employment.",
+    "attributes": {
+      "age_minimum": 18,
+      "urban_area_flag": false,
+      "willing_to_do_unskilled_manual_work": true
+    },
+    "validation_logic": "True if age >= 18 AND urban_area_flag is false AND willing_to_do_unskilled_manual_work is true.",
+    "required_documents": [
+      "Aadhaar Card",
+      "Ration Card"
+    ],
+    "application_steps": [
+      "Apply at Gram Panchayat.",
+      "Receive Job Card.",
+      "Request employment.",
+      "Start work."
+    ],
+    "contact": {
+      "helpline": "1800-110-707",
+      "office": "Gram Rozgar Sahayak (Gram Panchayat Office)",
+      "website": ""
+    }
+  },
+{
+  "scheme_id": "IN-AGRI-006",
+  "scheme_name": "PM Fasal Bima Yojana (PMFBY)",
+  "category": "Agriculture & Rural Safety Nets",
+  "description": "Crop insurance scheme for farmers.",
+  "benefit": "Financial protection against crop loss.",
+  "attributes": {
+    "is_farmer": true,
+    "cultivated_notified_crops_flag": true,
+    "insurable_interest_in_land": true
+  },
+  "validation_logic": "True if all three operational attributes evaluate to true.",
+  "required_documents": [
+    "Aadhaar Card",
+    "Land Record",
+    "Bank Passbook"
+  ],
+  "application_steps": [
+    "Visit the nearest Agriculture Office or Bank.",
+    "Submit crop and land details.",
+    "Complete insurance registration."
+  ],
+  "contact": {
+    "helpline": "1800-180-1551",
+    "office": "Primary Agricultural Credit Society (PACS) / Loan Bank Branch",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-AGRI-007",
+  "scheme_name": "PM Krishi Sinchayee Yojana (PMKSY)",
+  "category": "Agriculture & Rural Safety Nets",
+  "description": "Supports efficient irrigation for farmers.",
+  "benefit": "Financial assistance for irrigation projects.",
+  "attributes": {
+    "is_landholder_or_lessee": true,
+    "has_access_to_water_source": true,
+    "micro_irrigation_interest_flag": true
+  },
+  "validation_logic": "True if all three operational attributes evaluate to true.",
+  "required_documents": [
+    "Aadhaar Card",
+    "Land Record"
+  ],
+  "application_steps": [
+    "Visit Agriculture Office.",
+    "Submit irrigation proposal.",
+    "Verification and approval."
+  ],
+  "contact": {
+    "helpline": "1800-180-1551",
+    "office": "Assistant Director of Agriculture / Block Development Officer",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-HOUSING-008",
+  "scheme_name": "Pradhan Mantri Awas Yojana (PMAY 2.0)",
+  "category": "Housing, Energy & Micro-Credit",
+  "description": "Affordable housing assistance for eligible families.",
+  "benefit": "Financial assistance for house construction.",
+  "attributes": {
+    "annual_income_max": 600000,
+    "pucca_house_ownership_flag": false,
+    "age_minimum": 18
+  },
+  "validation_logic": "True if annual_household_income <= 600000 AND pucca_house_ownership_flag is false AND age >= 18.",
+  "required_documents": [
+    "Aadhaar Card",
+    "Income Certificate",
+    "Ration Card"
+  ],
+  "application_steps": [
+    "Apply through local authority.",
+    "Submit required documents.",
+    "Verification and sanction."
+  ],
+  "contact": {
+    "helpline": "1800-11-3377 / 1800-11-6446",
+    "office": "Gram Panchayat / Municipal Corporation",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-ENERGY-009",
+  "scheme_name": "PM Surya Ghar (Muft Bijli Yojana)",
+  "category": "Housing, Energy & Micro-Credit",
+  "description": "Rooftop solar subsidy scheme.",
+  "benefit": "Subsidy for residential rooftop solar installation.",
+  "attributes": {
+    "is_electricity_consumer": true,
+    "residential_connection_flag": true,
+    "adequate_roof_space_flag": true
+  },
+  "validation_logic": "True if all three operational attributes evaluate to true.",
+  "required_documents": [
+    "Electricity Bill",
+    "Aadhaar Card"
+  ],
+  "application_steps": [
+    "Apply through the official portal.",
+    "Site inspection.",
+    "Solar installation.",
+    "Receive subsidy."
+  ],
+  "contact": {
+    "helpline": "15555 / 155243",
+    "office": "Local Electricity Distribution Company (DISCOM)",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-ENERGY-010",
+  "scheme_name": "PM Ujjwala Yojana (PMUY)",
+  "category": "Housing, Energy & Micro-Credit",
+  "description": "Provides LPG connections to eligible women.",
+  "benefit": "Free LPG connection and financial support.",
+  "attributes": {
+    "gender": "Female",
+    "age_minimum": 18,
+    "ration_card_type": [
+      "BPL",
+      "AAY",
+      "PHH",
+      "SPHH"
+    ]
+  },
+  "validation_logic": "True if gender matches 'Female' AND age >= 18 AND ration_card_type is included in the target array.",
+  "required_documents": [
+    "Aadhaar Card",
+    "Ration Card"
+  ],
+  "application_steps": [
+    "Visit the nearest LPG distributor.",
+    "Submit application.",
+    "Verification.",
+    "Receive LPG connection."
+  ],
+  "contact": {
+    "helpline": "1906 / 1800-266-0355",
+    "office": "Nearby LPG Gas Distributor Showroom",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-ENERGY-010",
+  "scheme_name": "PM Ujjwala Yojana (PMUY)",
+  "category": "Housing, Energy & Micro-Credit",
+  "description": "Provides LPG connections to eligible women.",
+  "benefit": "Free LPG connection and financial support.",
+  "attributes": {
+    "gender": "Female",
+    "age_minimum": 18,
+    "ration_card_type": [
+      "BPL",
+      "AAY",
+      "PHH",
+      "SPHH"
+    ]
+  },
+  "validation_logic": "True if gender matches 'Female' AND age >= 18 AND ration_card_type is included in the target array.",
+  "required_documents": [
+    "Aadhaar Card",
+    "Ration Card"
+  ],
+  "application_steps": [
+    "Visit the nearest LPG distributor.",
+    "Submit application.",
+    "Verification.",
+    "Receive LPG connection."
+  ],
+  "contact": {
+    "helpline": "1906 / 1800-266-0355",
+    "office": "Nearby LPG Gas Distributor Showroom",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-FINANCE-011",
+  "scheme_name": "PM SVANidhi",
+  "category": "Housing, Energy & Micro-Credit",
+  "description": "Provides collateral-free working capital loans to urban street vendors.",
+  "benefit": "Collateral-free working capital loan.",
+  "attributes": {
+    "is_urban_street_vendor": true,
+    "has_certificate_of_vending_or_id_card": true,
+    "age_minimum": 18
+  },
+  "validation_logic": "True if is_urban_street_vendor is true AND has_certificate_of_vending_or_id_card is true AND age >= 18.",
+  "required_documents": [
+    "Aadhaar Card",
+    "Certificate of Vending / Vendor ID"
+  ],
+  "application_steps": [
+    "Visit Urban Local Body or Bank.",
+    "Submit application.",
+    "Verification.",
+    "Loan sanction."
+  ],
+  "contact": {
+    "helpline": "1800-11-1979",
+    "office": "Urban Local Body (ULB) Office / Public Sector Bank Manager",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-WOMEN-012",
+  "scheme_name": "Sukanya Samriddhi Yojana (SSY)",
+  "category": "Women, Children & Social Security",
+  "description": "Savings scheme for the girl child.",
+  "benefit": "High-interest long-term savings account.",
+  "attributes": {
+    "child_gender": "Female",
+    "child_age_maximum": 10,
+    "is_indian_citizen": true
+  },
+  "validation_logic": "True if child_gender is 'Female' AND child_age <= 10 AND is_indian_citizen is true.",
+  "required_documents": [
+    "Girl Child Birth Certificate",
+    "Aadhaar Card"
+  ],
+  "application_steps": [
+    "Visit Post Office or Bank.",
+    "Submit documents.",
+    "Open SSY account."
+  ],
+  "contact": {
+    "helpline": "155299",
+    "office": "Neighborhood Post Office / Public Sector Bank",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-WOMEN-013",
+  "scheme_name": "PM Matru Vandana Yojana (PMMVY)",
+  "category": "Women, Children & Social Security",
+  "description": "Maternity benefit scheme for eligible women.",
+  "benefit": "Financial assistance during pregnancy.",
+  "attributes": {
+    "gender": "Female",
+    "pregnancy_registered_flag": true,
+    "government_employee_flag": false
+  },
+  "validation_logic": "True if gender is 'Female' AND pregnancy_registered_flag is true AND government_employee_flag is false.",
+  "required_documents": [
+    "Aadhaar Card",
+    "Pregnancy Registration Record"
+  ],
+  "application_steps": [
+    "Register pregnancy.",
+    "Visit Anganwadi Centre.",
+    "Submit required documents."
+  ],
+  "contact": {
+    "helpline": "011-23382393",
+    "office": "Anganwadi Center / Health Sub-Centre",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-FINANCE-014",
+  "scheme_name": "Atal Pension Yojana (APY)",
+  "category": "Women, Children & Social Security",
+  "description": "Pension scheme for workers in the unorganized sector.",
+  "benefit": "Guaranteed monthly pension after retirement.",
+  "attributes": {
+    "age_minimum": 18,
+    "age_maximum": 40,
+    "is_taxpayer": false
+  },
+  "validation_logic": "True if age is between 18 and 40 (inclusive) AND is_taxpayer is false.",
+  "required_documents": [
+    "Aadhaar Card",
+    "Bank Passbook"
+  ],
+  "application_steps": [
+    "Visit your bank.",
+    "Enroll in APY.",
+    "Auto-debit starts."
+  ],
+  "contact": {
+    "helpline": "1800-110-066",
+    "office": "Savings Account Bank Branch Counter",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-SOCIAL-015",
+  "scheme_name": "National Social Assistance Programme (NSAP)",
+  "category": "Women, Children & Social Security",
+  "description": "Social assistance for elderly, widows and persons with disabilities.",
+  "benefit": "Monthly financial assistance.",
+  "attributes": {
+    "ration_card_type": [
+      "BPL",
+      "AAY",
+      "PHH",
+      "SPHH"
+    ],
+    "age_minimum": 60,
+    "is_destitute_widow_or_disabled_flag": true
+  },
+  "validation_logic": "True if ration_card_type is valid AND (age >= 60 OR is_destitute_widow_or_disabled_flag is true).",
+  "required_documents": [
+    "Aadhaar Card",
+    "Ration Card",
+    "Income Certificate"
+  ],
+  "application_steps": [
+    "Visit Social Welfare Office.",
+    "Submit application.",
+    "Verification.",
+    "Receive benefits."
+  ],
+  "contact": {
+    "helpline": "1800-111-555",
+    "office": "District Social Welfare Office / Block Development Officer",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-BIZ-016",
+  "scheme_name": "PM Mudra Yojana (PMMY)",
+  "category": "Employment, Enterprise & Skills",
+  "description": "Provides collateral-free business loans to eligible entrepreneurs.",
+  "benefit": "Business loan up to eligible category limits.",
+  "attributes": {
+    "age_minimum": 18,
+    "is_corporate_entity": false,
+    "non_farm_income_generating_activity_flag": true
+  },
+  "validation_logic": "True if age >= 18 AND is_corporate_entity is false AND non_farm_income_generating_activity_flag is true.",
+  "required_documents": [
+    "Aadhaar Card",
+    "Business PAN / Udyam Card",
+    "Bank Passbook"
+  ],
+  "application_steps": [
+    "Visit a participating bank.",
+    "Submit Mudra application.",
+    "Document verification.",
+    "Loan sanction."
+  ],
+  "contact": {
+    "helpline": "1800-180-1111 / 1800-11-0001",
+    "office": "Commercial Bank Branch / Regional Rural Bank",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-BIZ-017",
+  "scheme_name": "PM Vishwakarma Yojana",
+  "category": "Employment, Enterprise & Skills",
+  "description": "Support scheme for traditional artisans and craftspeople.",
+  "benefit": "Skill training, toolkit incentive and concessional loans.",
+  "attributes": {
+    "age_minimum": 18,
+    "engaged_in_traditional_artisan_trade": true,
+    "government_employee_in_family_flag": false
+  },
+  "validation_logic": "True if age >= 18 AND engaged_in_traditional_artisan_trade is true AND government_employee_in_family_flag is false.",
+  "required_documents": [
+    "Aadhaar Card",
+    "E-Shram Card"
+  ],
+  "application_steps": [
+    "Register under PM Vishwakarma.",
+    "Complete verification.",
+    "Receive training and benefits."
+  ],
+  "contact": {
+    "helpline": "17923 / 1800-267-7777",
+    "office": "District Industries Centre (DIC) / Gram Panchayat Executive Office",
+    "website": ""
+  }
+},
+ {
+  "scheme_id": "IN-SKILLS-018",
+  "scheme_name": "PM Kaushal Vikas Yojana (PMKVY)",
+  "category": "Employment, Enterprise & Skills",
+  "description": "Skill development and certification programme.",
+  "benefit": "Free skill training and certification.",
+  "attributes": {
+    "age_minimum": 15,
+    "age_maximum": 45,
+    "unemployed_or_school_dropout_flag": true
+  },
+  "validation_logic": "True if age is between 15 and 45 (inclusive) AND unemployed_or_school_dropout_flag is true.",
+  "required_documents": [
+    "Aadhaar Card"
+  ],
+  "application_steps": [
+    "Visit nearest PMKK Centre.",
+    "Register.",
+    "Choose training course.",
+    "Complete certification."
+  ],
+  "contact": {
+    "helpline": "1800-123-9626",
+    "office": "Pradhan Mantri Kaushal Kendra (PMKK)",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-BIZ-019",
+  "scheme_name": "Stand-Up India",
+  "category": "Employment, Enterprise & Skills",
+  "description": "Supports new enterprises by women and SC/ST entrepreneurs.",
+  "benefit": "Bank loan for greenfield enterprises.",
+  "attributes": {
+    "age_minimum": 18,
+    "caste_category_or_gender": [
+      "SC",
+      "ST",
+      "Female"
+    ],
+    "is_greenfield_enterprise": true
+  },
+  "validation_logic": "True if age >= 18 AND (caste_category_or_gender satisfies array OR applicant is female) AND is_greenfield_enterprise is true.",
+  "required_documents": [
+    "Aadhaar Card",
+    "Caste Certificate",
+    "Business PAN / Udyam Card"
+  ],
+  "application_steps": [
+    "Prepare business proposal.",
+    "Visit scheduled commercial bank.",
+    "Loan appraisal.",
+    "Loan sanction."
+  ],
+  "contact": {
+    "helpline": "1800-180-1111",
+    "office": "Lead District Manager (LDM) / Scheduled Commercial Bank Branch",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-EDU-020",
+  "scheme_name": "National Means-cum-Merit Scholarship (NMMS)",
+  "category": "Education, Nutrition & Digital Tools",
+  "description": "Scholarship for meritorious students from economically weaker families.",
+  "benefit": "Annual scholarship assistance.",
+  "attributes": {
+    "current_class": "8",
+    "minimum_academic_percentage_previous_class": 55,
+    "annual_household_income_max": 350000
+  },
+  "validation_logic": "True if current_class is '8' AND minimum_academic_percentage_previous_class >= 55 AND annual_household_income <= 350000.",
+  "required_documents": [
+    "Income Certificate",
+    "School Academic Records"
+  ],
+  "application_steps": [
+    "Apply through school.",
+    "Appear for scholarship examination.",
+    "Verification.",
+    "Scholarship disbursement."
+  ],
+  "contact": {
+    "helpline": "0120-6619540",
+    "office": "School Headmaster / Principal",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-EDU-021",
+  "scheme_name": "PM-POSHAN (Mid-Day Meal)",
+  "category": "Education, Nutrition & Digital Tools",
+  "description": "Provides nutritious meals to children studying in government schools.",
+  "benefit": "Free nutritious meals during school days.",
+  "attributes": {
+    "enrolled_in_government_school": true,
+    "class_level_minimum": 1,
+    "class_level_maximum": 8
+  },
+  "validation_logic": "True if enrolled_in_government_school is true AND student class level falls between 1 and 8 (inclusive).",
+  "required_documents": [
+    "School Admission Record"
+  ],
+  "application_steps": [
+    "Enroll in a Government School.",
+    "Attendance is verified.",
+    "Meals are provided automatically."
+  ],
+  "contact": {
+    "helpline": "1515",
+    "office": "Local Government Primary or Upper-Primary School",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-SOCIAL-022",
+  "scheme_name": "PM Garib Kalyan Anna Yojana (PMGKAY)",
+  "category": "Education, Nutrition & Digital Tools",
+  "description": "Provides free food grains to eligible ration card holders.",
+  "benefit": "Free food grains under the Public Distribution System.",
+  "attributes": {
+    "ration_card_type": [
+      "PHH",
+      "SPHH",
+      "AAY"
+    ],
+    "has_active_ration_card": true,
+    "secc_beneficiary_flag": true
+  },
+  "validation_logic": "True if ration_card_type matches the valid array constraints AND has_active_ration_card is true.",
+  "required_documents": [
+    "Ration Card",
+    "Aadhaar Card"
+  ],
+  "application_steps": [
+    "Visit the assigned Fair Price Shop.",
+    "Authenticate identity.",
+    "Collect monthly ration."
+  ],
+  "contact": {
+    "helpline": "1967",
+    "office": "Neighborhood Fair Price Shop (Ration Dealer)",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-EDU-023",
+  "scheme_name": "Central Sector Scheme of Scholarship (CSSS)",
+  "category": "Education, Nutrition & Digital Tools",
+  "description": "Scholarship for meritorious students pursuing higher education.",
+  "benefit": "Financial assistance for higher education.",
+  "attributes": {
+    "class_12_merit_percentile_minimum": 80,
+    "annual_household_income_max": 450000,
+    "pursuing_regular_higher_education": true
+  },
+  "validation_logic": "True if class_12_merit_percentile_minimum >= 80 AND annual_household_income <= 450000 AND pursuing_regular_higher_education is true.",
+  "required_documents": [
+    "Income Certificate",
+    "Class 12 Marksheet",
+    "College Admission Proof"
+  ],
+  "application_steps": [
+    "Apply through National Scholarship Portal.",
+    "Upload documents.",
+    "Institute verification.",
+    "Scholarship disbursement."
+  ],
+  "contact": {
+    "helpline": "0120-6619540",
+    "office": "Dean of Student Welfare / Scholarship Desk",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-DIGITAL-024",
+  "scheme_name": "DigiLocker Ecosystem",
+  "category": "Education, Nutrition & Digital Tools",
+  "description": "Digital document storage and verification platform.",
+  "benefit": "Secure digital access to government documents.",
+  "attributes": {
+    "has_valid_aadhaar": true,
+    "aadhaar_linked_mobile_flag": true,
+    "age_minimum": 0
+  },
+  "validation_logic": "True if has_valid_aadhaar is true AND aadhaar_linked_mobile_flag is true.",
+  "required_documents": [
+    "Aadhaar Card"
+  ],
+  "application_steps": [
+    "Sign in with Aadhaar.",
+    "Verify mobile OTP.",
+    "Access digital documents."
+  ],
+  "contact": {
+    "helpline": "011-24303714",
+    "office": "Digital Support Portal",
+    "website": ""
+  }
+},
+{
+  "scheme_id": "IN-DIGITAL-025",
+  "scheme_name": "Ayushman Bharat Digital Mission (ABDM)",
+  "category": "Education, Nutrition & Digital Tools",
+  "description": "Creates a digital health identity for citizens.",
+  "benefit": "Digital health records and seamless healthcare access.",
+  "attributes": {
+    "has_valid_identity_proof": true,
+    "is_indian_resident": true,
+    "age_minimum": 0
+  },
+  "validation_logic": "True if has_valid_identity_proof is true AND is_indian_resident is true.",
+  "required_documents": [
+    "Aadhaar Card",
+    "Valid Identity Proof"
+  ],
+  "application_steps": [
+    "Register for an ABHA ID.",
+    "Verify identity.",
+    "Create digital health profile."
+  ],
+  "contact": {
+    "helpline": "14555",
+    "office": "Government Hospital Registration Counter",
+    "website": ""
+  }
+}
+]

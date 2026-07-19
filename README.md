@@ -1,16 +1,55 @@
-# React + Vite
+# 🚀 AI Civic Copilot
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📌 Overview
 
-Currently, two official plugins are available:
+AI Civic Copilot is an AI-powered government scheme recommendation platform that helps citizens discover government welfare schemes they are eligible for.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Many citizens miss important benefits because they are unaware of available schemes or find government portals difficult to navigate.
 
-## React Compiler
+This project simplifies the process by analyzing citizen details and recommending suitable schemes based on eligibility criteria.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+# 🎯 Problem Statement
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Millions of citizens are unable to access government welfare benefits because:
+
+- They do not know which schemes they qualify for.
+- Eligibility rules are complex and difficult to understand.
+- Existing portals require manual searching.
+- Rural citizens face language and accessibility barriers.
+
+---
+
+# 💡 Solution
+
+AI Civic Copilot acts as a personal government benefits assistant.
+
+The system:
+
+1. Collects citizen information.
+2. Evaluates eligibility criteria.
+3. Matches citizens with suitable government schemes.
+4. Provides personalized recommendations.
+
+---
+
+# ✨ Key Features
+
+## 1. Citizen Profile Analysis
+
+Users can provide:
+
+- Age
+- Gender
+- Annual income
+- Land ownership status
+- Bank account availability
+
+
+## 2. Government Scheme Eligibility Engine
+
+A rule-based engine analyzes citizen information and checks eligibility against available schemes.
+
+Example:
+

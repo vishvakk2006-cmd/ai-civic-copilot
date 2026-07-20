@@ -1,0 +1,9 @@
+Government of India
+  Name : Ramesh Kumar
+  Gender : Male
+  Age : 24
+  Annual Household Income : 180000
+  Land Holder : Yes
+  Active Bank Savings Account : Yes
+  District : Chennai
+  State : Tamil Nadu

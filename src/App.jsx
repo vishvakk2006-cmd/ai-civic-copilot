@@ -110,6 +110,7 @@ async function uploadAllDocuments() {
         );
 
         alert("Citizen profile auto-filled from uploaded documents!");
+        await analyzeEligibility();
 
     }
 

@@ -31,8 +31,8 @@
     "scheme_name": "PM Suraksha Bima Yojana (PMSBY)",
     "category": "Healthcare & Life Safety",
     "description": "Accident insurance scheme.",
-    "benefit": "Accidental insurance coverage.",
-    "attributes": {
+    "benefit": "Accidental insurance coverage.", 
+    "attributes": { 
       "age_minimum": 18,
       "age_maximum": 70,
       "has_active_bank_savings_account": true

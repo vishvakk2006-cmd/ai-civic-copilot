@@ -13,7 +13,7 @@ export async function askGemini(question) {
         throw error;
     }
 
-    const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+    const model = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
     const response = await fetch(
         `${GEMINI_API_URL}/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`,
         {
@@ -35,7 +35,9 @@ export async function askGemini(question) {
 
     if (!response.ok) {
         const error = new Error(
-            `The AI assistant request failed (HTTP ${response.status}).`
+            response.status === 404
+                ? "The configured Gemini model is unavailable. Check GEMINI_MODEL in the backend deployment."
+                : `The AI assistant request failed (HTTP ${response.status}).`
         );
         error.statusCode = 502;
         throw error;

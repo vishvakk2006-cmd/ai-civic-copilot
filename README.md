@@ -73,7 +73,7 @@ Set these Render environment variables:
 | --- | --- | --- |
 | `FRONTEND_URL` | Yes | Exact Vercel production URL; comma-separate additional allowed origins |
 | `GEMINI_API_KEY` | For AI chat | Gemini API key; the API still starts without it |
-| `GEMINI_MODEL` | No | Gemini model name; defaults to `gemini-2.5-flash` |
+| `GEMINI_MODEL` | No | Gemini model name; defaults to `gemini-3.5-flash-lite` |
 | `NODE_ENV` | No | Set to `production` |
 
 `backend/.env.example` contains placeholders for local development. Never put

@@ -53,6 +53,26 @@ A rule-based engine analyzes citizen information and checks eligibility against 
 
 ---
 
+## Repository structure
+
+```text
+backend/
+  data/       Scheme data
+  routes/     HTTP endpoints
+  services/   Eligibility, OCR, AI, and recommendation logic
+  tests/      Automated backend tests
+src/
+  components/ Active React UI components
+  services/   Frontend API and report helpers
+  assets/     Referenced frontend assets
+public/       Static files served by Vite
+```
+
+Deployment configuration and package scripts stay at the repository root so
+Vercel and Render can discover them without custom paths.
+
+---
+
 ## Deployment
 
 The repository is configured for a Vite frontend on Vercel and an Express API

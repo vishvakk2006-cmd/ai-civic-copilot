@@ -1,1 +1,0 @@
-export { askGemini as askAI } from "./geminiService.js";

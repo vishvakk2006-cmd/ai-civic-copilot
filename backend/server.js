@@ -19,19 +19,23 @@ if (existsSync(envPath)) {
 
 const app = express();
 const port = Number(process.env.PORT) || 5000;
-const allowedOrigins = (process.env.FRONTEND_URL || "")
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
+const allowedOrigins = new Set([
+    "https://ai-civic-copilot.vercel.app",
+    ...(process.env.FRONTEND_URL || "")
+        .split(",")
+        .map((origin) => origin.trim())
+        .filter(Boolean)
+]);
 
 if (process.env.NODE_ENV !== "production") {
-    allowedOrigins.push("http://localhost:5173", "http://127.0.0.1:5173");
+    allowedOrigins.add("http://localhost:5173");
+    allowedOrigins.add("http://127.0.0.1:5173");
 }
 
 app.use(
     cors({
         origin(origin, callback) {
-            if (!origin || allowedOrigins.includes(origin)) {
+            if (!origin || allowedOrigins.has(origin)) {
                 callback(null, true);
                 return;
             }

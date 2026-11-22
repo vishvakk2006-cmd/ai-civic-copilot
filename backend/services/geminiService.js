@@ -2,6 +2,7 @@ import process from "node:process";
 
 const GEMINI_API_URL =
     "https://generativelanguage.googleapis.com/v1beta/models";
+const DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite";
 
 export async function askGemini(question) {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -13,7 +14,11 @@ export async function askGemini(question) {
         throw error;
     }
 
-    const model = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
+    const configuredModel = process.env.GEMINI_MODEL?.trim();
+    const model =
+        !configuredModel || configuredModel === "gemini-2.5-flash"
+            ? DEFAULT_GEMINI_MODEL
+            : configuredModel;
     const response = await fetch(
         `${GEMINI_API_URL}/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`,
         {
@@ -36,7 +41,7 @@ export async function askGemini(question) {
     if (!response.ok) {
         const error = new Error(
             response.status === 404
-                ? "The configured Gemini model is unavailable. Check GEMINI_MODEL in the backend deployment."
+                ? `Gemini model "${model}" is unavailable to the configured API key. Check GEMINI_MODEL and GEMINI_API_KEY access in the backend deployment.`
                 : `The AI assistant request failed (HTTP ${response.status}).`
         );
         error.statusCode = 502;

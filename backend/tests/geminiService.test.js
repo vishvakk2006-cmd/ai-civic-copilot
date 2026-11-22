@@ -31,10 +31,23 @@ test("uses a current default model and explains unavailable-model errors", async
             /\/models\/gemini-3\.5-flash-lite:generateContent\?/
         );
 
+        process.env.GEMINI_MODEL = "gemini-2.5-flash";
+        response = new Response(
+            JSON.stringify({
+                candidates: [{ content: { parts: [{ text: "Hello." }] } }]
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } }
+        );
+        assert.equal(await askGemini("Hi"), "Hello.");
+        assert.match(
+            requestUrl,
+            /\/models\/gemini-3\.5-flash-lite:generateContent\?/
+        );
+
         response = new Response("", { status: 404 });
         await assert.rejects(
             askGemini("Hi"),
-            /The configured Gemini model is unavailable/
+            /Gemini model "gemini-3\.5-flash-lite" is unavailable/
         );
     } finally {
         globalThis.fetch = originalFetch;

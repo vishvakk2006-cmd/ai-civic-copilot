@@ -84,8 +84,9 @@ real keys in tracked files.
 - Framework preset: Vite
 - Build command: `npm run build`
 - Output directory: `dist`
-- Set `VITE_API_URL` to the Render service origin, for example
-  `https://your-service.onrender.com` (do not append `/api`).
+- `.env.production` sets the public `VITE_API_URL` to the Render service origin;
+  it contains no secret. If overriding it in Vercel, use the same origin and do
+  not append `/api`.
 
 `.env.example` contains the local Vite API URL placeholder.
 

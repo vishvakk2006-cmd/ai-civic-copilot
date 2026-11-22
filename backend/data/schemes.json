@@ -248,39 +248,7 @@
     "website": ""
   }
 },
-{
-  "scheme_id": "IN-ENERGY-010",
-  "scheme_name": "PM Ujjwala Yojana (PMUY)",
-  "category": "Housing, Energy & Micro-Credit",
-  "description": "Provides LPG connections to eligible women.",
-  "benefit": "Free LPG connection and financial support.",
-  "attributes": {
-    "gender": "Female",
-    "age_minimum": 18,
-    "ration_card_type": [
-      "BPL",
-      "AAY",
-      "PHH",
-      "SPHH"
-    ]
-  },
-  "validation_logic": "True if gender matches 'Female' AND age >= 18 AND ration_card_type is included in the target array.",
-  "required_documents": [
-    "Aadhaar Card",
-    "Ration Card"
-  ],
-  "application_steps": [
-    "Visit the nearest LPG distributor.",
-    "Submit application.",
-    "Verification.",
-    "Receive LPG connection."
-  ],
-  "contact": {
-    "helpline": "1906 / 1800-266-0355",
-    "office": "Nearby LPG Gas Distributor Showroom",
-    "website": ""
-  }
-},
+
 {
   "scheme_id": "IN-ENERGY-010",
   "scheme_name": "PM Ujjwala Yojana (PMUY)",

@@ -8,6 +8,9 @@ export function evaluateRule(ruleName, citizenValue, ruleValue) {
         case "age_maximum":
             return citizenValue <= ruleValue;
 
+        case "special_auto_include_age":
+            return citizenValue >= ruleValue;
+
         case "gender":
             return citizenValue === ruleValue;
 

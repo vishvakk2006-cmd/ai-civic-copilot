@@ -24,10 +24,6 @@ function SchemeCard({ scheme }) {
         <b>Priority Score:</b> {scheme.priority_score}
       </p>
 
-      <p>
-        <b>Approval Probability:</b> {scheme.approval_probability}%
-      </p>
-
       <h3>Why Eligible?</h3>
       <h3>Required Documents</h3>
 

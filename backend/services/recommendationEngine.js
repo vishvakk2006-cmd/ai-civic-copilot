@@ -16,8 +16,7 @@ export function rankSchemes(schemes) {
 
             return {
                 ...scheme,
-                priority_score: score,
-                approval_probability: Math.min(score + 20, 95)
+                priority_score: score
             };
 
         })

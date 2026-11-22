@@ -2,24 +2,6 @@ function AIInsights({ schemes }) {
 
   if (!schemes.length) return null;
 
-  const totalBenefit = schemes.reduce((sum, scheme) => {
-
-    const value = Number(
-      String(scheme.benefit).replace(/[^0-9]/g, "")
-    );
-
-    return sum + (isNaN(value) ? 0 : value);
-
-  }, 0);
-
-  const avgApproval =
-    Math.round(
-      schemes.reduce(
-        (sum, s) => sum + s.approval_probability,
-        0
-      ) / schemes.length
-    );
-
   return (
 
     <div
@@ -38,11 +20,8 @@ function AIInsights({ schemes }) {
       </p>
 
       <p>
-        <b>Total Estimated Benefits:</b> ₹{totalBenefit.toLocaleString()}
-      </p>
-
-      <p>
-        <b>Average Approval Probability:</b> {avgApproval}%
+        Matches are based on the rules and information available; final
+        eligibility is determined by the relevant government authority.
       </p>
 
       <p>

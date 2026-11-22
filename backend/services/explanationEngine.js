@@ -1,6 +1,7 @@
 const explanationMap = {
     age_minimum: "Minimum age requirement satisfied.",
     age_maximum: "Maximum age requirement satisfied.",
+    special_auto_include_age: "Age-based automatic inclusion requirement satisfied.",
     gender: "Gender requirement satisfied.",
     annual_income_max: "Income is within the eligible limit.",
     ration_card_type: "Eligible ration card available.",

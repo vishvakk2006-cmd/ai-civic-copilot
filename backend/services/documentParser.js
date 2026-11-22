@@ -15,11 +15,11 @@ export function parseCitizenData(text) {
         citizen.gender = gender[1];
 
     const income =
-        text.match(/Annual Household Income\s*:\s*(\d+)/i);
+        text.match(/Annual Household Income\s*:\s*₹?\s*([\d,]+)/i);
 
     if (income)
         citizen.annual_household_income =
-            Number(income[1]);
+            Number(income[1].replace(/,/g, ""));
 
     const land =
         text.match(/Land Holder\s*:\s*(Yes|No)/i);

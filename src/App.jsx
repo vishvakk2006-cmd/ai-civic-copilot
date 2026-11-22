@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 
-import { checkEligibility } from "./services/api";
+import { API_CONFIG_ERROR, apiUrl, checkEligibility } from "./services/api";
 import { uploadDocument } from "./services/uploadApi";
 
 import ResultsPanel from "./components/ResultsPanel";
@@ -12,14 +12,17 @@ import SchemeCharts from "./components/SchemeCharts";
 
 function App() {
 
-  const [backendMessage, setBackendMessage] = useState("");
+  const [backendMessage, setBackendMessage] = useState(API_CONFIG_ERROR);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Citizen Details
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [income, setIncome] = useState("");
-  const [isLandholder, setIsLandholder] = useState(false);
-  const [hasBankAccount, setHasBankAccount] = useState(false);
+  const [isLandholder, setIsLandholder] = useState("");
+  const [hasBankAccount, setHasBankAccount] = useState("");
 
   // Documents
   const [aadhaar, setAadhaar] = useState(null);
@@ -29,133 +32,139 @@ function App() {
 
   // Schemes
   const [schemes, setSchemes] = useState([]);
+  const [incompleteSchemes, setIncompleteSchemes] = useState([]);
+  const [providedDocuments, setProvidedDocuments] = useState([]);
   const [search, setSearch] = useState("");
 const [categoryFilter, setCategoryFilter] = useState("All");
 
   useEffect(() => {
+    if (API_CONFIG_ERROR) return;
 
-    fetch("http://localhost:5000/message")
-      .then((res) => res.json())
-      .then((data) => setBackendMessage(data.message))
-      .catch(console.error);
+    fetch(apiUrl("/healthz"))
+      .then((res) => {
+        if (!res.ok) throw new Error("Backend health check failed.");
+        return res.json();
+      })
+      .then(() => setBackendMessage("Connected"))
+      .catch(() => setBackendMessage("Unavailable"));
 
   }, []);
 
-async function uploadAllDocuments() {
+  function buildCitizen(overrides = {}, documents = providedDocuments) {
+    const citizen = { provided_documents: documents };
+    const valueFor = (field, currentValue) =>
+      Object.prototype.hasOwnProperty.call(overrides, field)
+        ? overrides[field]
+        : currentValue;
 
+    const ageValue = valueFor("age", age);
+    if (ageValue !== "" && ageValue !== undefined && ageValue !== null) {
+      citizen.age = Number(ageValue);
+    }
+
+    const incomeValue = valueFor("annual_household_income", income);
+    if (incomeValue !== "" && incomeValue !== undefined && incomeValue !== null) {
+      citizen.annual_household_income = Number(incomeValue);
+    }
+
+    const genderValue = valueFor("gender", gender);
+    if (genderValue) citizen.gender = genderValue;
+
+    for (const [field, currentValue] of [
+      ["is_landholder", isLandholder],
+      ["has_active_bank_savings_account", hasBankAccount]
+    ]) {
+      const value = valueFor(field, currentValue);
+      if (value === true || value === "true") citizen[field] = true;
+      if (value === false || value === "false") citizen[field] = false;
+    }
+
+    return citizen;
+  }
+
+  async function uploadAllDocuments() {
+    const selectedDocuments = [
+      [aadhaar, "Aadhaar Card"],
+      [incomeCertificate, "Income Certificate"],
+      [land, "Land Ownership Record"],
+      [bankPassBook, "Bank Passbook"]
+    ].filter(([file]) => file);
+
+    if (selectedDocuments.length === 0) {
+      setErrorMessage("Choose at least one document to upload.");
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMessage("");
+    setStatusMessage("");
     try {
+      const extractedCitizen = {};
+      const documents = [];
+      const extractionNotes = [];
+      for (const [file, documentType] of selectedDocuments) {
+        const result = await uploadDocument(file);
+        Object.assign(extractedCitizen, result.extractedData || {});
+        documents.push(documentType);
+        if (result.note) extractionNotes.push(result.note);
+      }
 
-        let extractedCitizen = {};
+      const overrides = {
+        age: extractedCitizen.age ?? age,
+        gender: extractedCitizen.gender ?? gender,
+        annual_household_income:
+          extractedCitizen.annual_household_income ?? income,
+        is_landholder: extractedCitizen.is_landholder ?? isLandholder,
+        has_active_bank_savings_account:
+          extractedCitizen.has_active_bank_savings_account ?? hasBankAccount
+      };
 
-        if (aadhaar) {
-
-            const result = await uploadDocument(aadhaar);
-
-            console.log("AADHAAR RESULT:", result);
-
-            extractedCitizen = {
-                ...extractedCitizen,
-                ...result.extractedData
-            };
-
-        }
-
-        if (incomeCertificate) {
-
-            const result = await uploadDocument(incomeCertificate);
-
-            console.log("INCOME RESULT:", result);
-
-            extractedCitizen = {
-                ...extractedCitizen,
-                ...result.extractedData
-            };
-
-        }
-
-        if (land) {
-
-            const result = await uploadDocument(land);
-
-            console.log("LAND RESULT:", result);
-
-            extractedCitizen = {
-                ...extractedCitizen,
-                ...result.extractedData
-            };
-
-        }
-
-        if (bankPassBook) {
-
-            const result = await uploadDocument(bankPassBook);
-
-            console.log("BANK RESULT:", result);
-
-            extractedCitizen = {
-                ...extractedCitizen,
-                ...result.extractedData
-            };
-
-        }
-
-        console.log("FINAL EXTRACTED:", extractedCitizen);
-
-        setAge(String(extractedCitizen.age ?? ""));
-        setGender(extractedCitizen.gender ?? "");
-        setIncome(String(extractedCitizen.annual_household_income ?? ""));
-        setIsLandholder(Boolean(extractedCitizen.is_landholder));
+      if (extractedCitizen.age !== undefined) setAge(String(extractedCitizen.age));
+      if (extractedCitizen.gender !== undefined) setGender(extractedCitizen.gender);
+      if (extractedCitizen.annual_household_income !== undefined) {
+        setIncome(String(extractedCitizen.annual_household_income));
+      }
+      if (extractedCitizen.is_landholder !== undefined) {
+        setIsLandholder(String(extractedCitizen.is_landholder));
+      }
+      if (extractedCitizen.has_active_bank_savings_account !== undefined) {
         setHasBankAccount(
-            Boolean(extractedCitizen.has_active_bank_savings_account)
+          String(extractedCitizen.has_active_bank_savings_account)
         );
+      }
 
-        alert("Citizen profile auto-filled from uploaded documents!");
-        await analyzeEligibility();
-
+      setProvidedDocuments(documents);
+      const citizen = buildCitizen(overrides, documents);
+      const analyzed = await analyzeEligibility(citizen);
+      if (analyzed && extractionNotes.length > 0) {
+        setStatusMessage(extractionNotes.join(" "));
+      }
     }
-
     catch (err) {
-
-        console.error(err);
-
-        alert("Upload failed.");
-
+      setErrorMessage(err.message || "Document upload failed.");
+    } finally {
+      setIsLoading(false);
     }
+  }
 
-}
-
-  async function analyzeEligibility() {
-
-    const citizen = {
-
-      age: Number(age),
-
-      gender,
-
-      annual_household_income: Number(income),
-
-      is_landholder: isLandholder,
-
-      has_active_bank_savings_account: hasBankAccount
-
-    };
-
+  async function analyzeEligibility(citizen = buildCitizen()) {
+    setIsLoading(true);
+    setErrorMessage("");
+    setStatusMessage("");
     try {
-
       const result = await checkEligibility(citizen);
-
       setSchemes(result.schemes || []);
-
+      setIncompleteSchemes(result.incompleteSchemes || []);
+      setStatusMessage("Eligibility rules evaluated using the details provided.");
+      return true;
+    } catch (err) {
+      setSchemes([]);
+      setIncompleteSchemes([]);
+      setErrorMessage(err.message || "Eligibility check failed.");
+      return false;
+    } finally {
+      setIsLoading(false);
     }
-
-    catch (err) {
-
-      console.error(err);
-
-      alert(err.message);
-
-    }
-
   }
   const filteredSchemes = schemes.filter((scheme) => {
 
@@ -172,16 +181,6 @@ async function uploadAllDocuments() {
 
 });
 const totalSchemes = filteredSchemes.length;
-
-const averageApproval =
-  filteredSchemes.length === 0
-    ? 0
-    : Math.round(
-        filteredSchemes.reduce(
-          (sum, scheme) => sum + scheme.approval_probability,
-          0
-        ) / filteredSchemes.length
-      );
 
 const topScheme =
   filteredSchemes.length > 0
@@ -215,7 +214,7 @@ AI Powered Government Scheme Recommendation Platform
 
   <p><b>Eligible Schemes:</b> {totalSchemes}</p>
 
-  <p><b>Average Approval Probability:</b> {averageApproval}%</p>
+  <p>These are rule-based matches, not a guarantee of government approval.</p>
 
   <p><b>Top Recommendation:</b> {topScheme}</p>
 
@@ -233,18 +232,14 @@ AI Powered Government Scheme Recommendation Platform
       <b>Benefit:</b> {bestScheme.benefit}
     </p>
 
-    <p>
-      <b>Approval Probability:</b> {bestScheme.approval_probability}%
-    </p>
+    <p>Rule-based recommendation only; government approval is not guaranteed.</p>
 
   </div>
 )}
 
-      <p>
-
-        <b>Backend Status:</b> {backendMessage}
-
-      </p>
+      <p><b>Backend Status:</b> {backendMessage}</p>
+      {statusMessage && <p role="status">{statusMessage}</p>}
+      {errorMessage && <p role="alert">{errorMessage}</p>}
 
       <hr />
 <h2>📂 Upload Required Documents</h2>
@@ -320,13 +315,15 @@ AI Powered Government Scheme Recommendation Platform
 
       <label>
 
-        <input
-          type="checkbox"
-          checked={isLandholder}
-          onChange={(e) => setIsLandholder(e.target.checked)}
-        />
-
         Land Holder
+        <select
+          value={isLandholder}
+          onChange={(e) => setIsLandholder(e.target.value)}
+        >
+          <option value="">Not provided</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
 
       </label>
 
@@ -334,13 +331,15 @@ AI Powered Government Scheme Recommendation Platform
 
       <label>
 
-        <input
-          type="checkbox"
-          checked={hasBankAccount}
-          onChange={(e) => setHasBankAccount(e.target.checked)}
-        />
-
         Active Bank Savings Account
+        <select
+          value={hasBankAccount}
+          onChange={(e) => setHasBankAccount(e.target.value)}
+        >
+          <option value="">Not provided</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
 
       </label>
 
@@ -350,9 +349,11 @@ AI Powered Government Scheme Recommendation Platform
       <hr />
       <br /><br />
 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-<button onClick={uploadAllDocuments} className="primary-btn">Upload Documents</button>
+<button onClick={uploadAllDocuments} className="primary-btn" disabled={isLoading}>
+  {isLoading ? "Processing..." : "Upload Documents"}
+</button>
 
-      <button onClick={analyzeEligibility} className="primary-btn">
+      <button onClick={() => analyzeEligibility()} className="primary-btn" disabled={isLoading}>
 
         Analyze Eligibility
 
@@ -393,7 +394,10 @@ AI Powered Government Scheme Recommendation Platform
 <br /><br />
 
       <SchemeCharts schemes={filteredSchemes} />
-      <ResultsPanel schemes={filteredSchemes} />
+      <ResultsPanel
+        schemes={filteredSchemes}
+        incompleteSchemes={incompleteSchemes}
+      />
 
       <ChatBot />
 

@@ -14,12 +14,12 @@ function SchemeCharts({ schemes }) {
     name: scheme.scheme_name.length > 15
       ? scheme.scheme_name.substring(0, 15) + "..."
       : scheme.scheme_name,
-    score: scheme.approval_probability
+    score: scheme.priority_score
   }));
 
   return (
     <div className="section-card">
-      <h2>Approval Probability Comparison</h2>
+      <h2>Recommendation Priority (not approval probability)</h2>
 
       <ResponsiveContainer width="100%" height={350}>
         <BarChart data={data}>

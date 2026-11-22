@@ -41,12 +41,13 @@ export function generateEligibilityReport(schemes) {
         y += 8;
 
         doc.text(
-            `Approval Probability: ${scheme.approval_probability}%`,
+            "Rule-based potential match; final eligibility is determined by the scheme authority.",
             25,
-            y
+            y,
+            { maxWidth: 165 }
         );
 
-        y += 15;
+        y += 20;
 
         if (y > 260) {
 

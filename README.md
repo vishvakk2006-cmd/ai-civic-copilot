@@ -51,5 +51,53 @@ Users can provide:
 
 A rule-based engine analyzes citizen information and checks eligibility against available schemes.
 
-Example:
+---
+
+## Deployment
+
+The repository is configured for a Vite frontend on Vercel and an Express API
+on Render. The backend runs from the repository root and does not persist
+uploaded documents; files are processed in memory and discarded after OCR.
+
+### Render backend
+
+- Root directory: repository root (`.`)
+- Build command: `npm install`
+- Start command: `node backend/server.js`
+- Health check: `/healthz`
+- Node.js: `22.13.0` or newer supported release (or Node `20.19.0` LTS)
+
+Set these Render environment variables:
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `FRONTEND_URL` | Yes | Exact Vercel production URL; comma-separate additional allowed origins |
+| `GEMINI_API_KEY` | For AI chat | Gemini API key; the API still starts without it |
+| `GEMINI_MODEL` | No | Gemini model name; defaults to `gemini-2.5-flash` |
+| `NODE_ENV` | No | Set to `production` |
+
+`backend/.env.example` contains placeholders for local development. Never put
+real keys in tracked files.
+
+### Vercel frontend
+
+- Framework preset: Vite
+- Build command: `npm run build`
+- Output directory: `dist`
+- Set `VITE_API_URL` to the Render service origin, for example
+  `https://your-service.onrender.com` (do not append `/api`).
+
+`.env.example` contains the local Vite API URL placeholder.
+
+### Upload and eligibility behavior
+
+The API accepts JPG, JPEG, PNG, and PDF files up to 10 MB. Image documents use
+English OCR; searchable PDFs use text extraction for up to 20 pages, and
+scanned PDFs use OCR on their first five pages. Documents are validated and processed in memory. OCR
+extracts only supported profile fields and never returns document text.
+
+Eligibility results require all applicable rule inputs to be known and matched.
+Unknown information is reported separately; a match is not a government
+approval guarantee. Missing documents are based on the document slots selected
+as provided by the user.
 

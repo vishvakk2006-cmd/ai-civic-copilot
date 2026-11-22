@@ -1,9 +1,27 @@
-function ResultsPanel({ schemes }) {
+function ResultsPanel({ schemes, incompleteSchemes = [] }) {
 
     if (!schemes || schemes.length === 0) {
 
         return (
-            <h3>No Eligible Schemes Found</h3>
+            <div>
+                <h3>No fully verified matches found</h3>
+                {incompleteSchemes.length > 0 && (
+                    <>
+                        <p>
+                            More information is needed before these schemes can
+                            be assessed:
+                        </p>
+                        <ul>
+                            {incompleteSchemes.slice(0, 8).map((scheme) => (
+                                <li key={scheme.scheme_id}>
+                                    {scheme.scheme_name}:{" "}
+                                    {scheme.missing_information.join(", ")}
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                )}
+            </div>
         );
 
     }
@@ -40,16 +58,15 @@ function ResultsPanel({ schemes }) {
                     </p>
 
                     <p>
-                        <b>Priority Score:</b> {scheme.priority_score}
+                        <b>Recommendation Priority:</b> {scheme.priority_score}
                     </p>
 
-                    <p>
-                        <b>Approval Probability:</b> {scheme.approval_probability}%
-                    </p>
-
-                    <p>
-                        <b>AI Reason:</b> {scheme.explanation}
-                    </p>
+                    <p><b>Why the listed rules match:</b></p>
+                    <ul>
+                        {scheme.explanation?.map((reason, index) => (
+                            <li key={index}>{reason}</li>
+                        ))}
+                    </ul>
 
                     <hr />
 
@@ -57,52 +74,43 @@ function ResultsPanel({ schemes }) {
 
                     <ul>
                         {scheme.required_documents?.map((doc, index) => (
-                            <li key={index}>{doc}</li>
+                            <li key={index}>
+                                {doc}
+                                {scheme.missing_documents?.includes(doc)
+                                    ? " (not selected as provided)"
+                                    : " (selected as provided)"}
+                            </li>
                         ))}
                     </ul>
 
                     <h4>📝 Application Process</h4>
 
                     <ol>
-                        {scheme.application_process?.map((step, index) => (
+                        {(scheme.application_steps || scheme.application_process)?.map((step, index) => (
                             <li key={index}>{step}</li>
                         ))}
                     </ol>
 
-                    <p>
-
-                        <b>🌐 Official Website:</b>
-
-                        <br />
-
-                        <a
-                            href={scheme.official_website}
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            {scheme.official_website}
-                        </a>
-
-                    </p>
-
-                    <p>
-
-                        <b>⏳ Estimated Processing Time:</b>
-
-                        {" "}
-
-                        {scheme.estimated_processing_days} days
-
-                    </p>
+                    {scheme.contact?.website && (
+                        <p>
+                            <b>🌐 Official Website:</b>
+                            <br />
+                            <a
+                                href={scheme.contact.website}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                {scheme.contact.website}
+                            </a>
+                        </p>
+                    )}
 
                 </div>
 
             ))}
 
         </div>
-
     );
-
 }
 
 export default ResultsPanel;

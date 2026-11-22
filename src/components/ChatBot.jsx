@@ -1,62 +1,46 @@
 import { useState } from "react";
+import { askAssistant } from "../services/api";
 
 function ChatBot() {
-
   const [question, setQuestion] = useState("");
-
   const [answer, setAnswer] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  function askAI() {
+  async function askAI() {
+    const prompt = question.trim();
+    if (!prompt || isLoading) return;
 
-    if (question === "") return;
-
-    if (question.toLowerCase().includes("pm kisan")) {
-
-      setAnswer(
-        "PM-KISAN provides ₹6,000 annually in three installments to eligible farmers."
-      );
-
-    } else if (question.toLowerCase().includes("housing")) {
-
-      setAnswer(
-        "You may be eligible for PM Awas Yojana if your income and housing status satisfy the eligibility criteria."
-      );
-
-    } else {
-
-      setAnswer(
-        "AI Copilot is still learning. This feature will be connected to an LLM in the future."
-      );
-
+    setError("");
+    setAnswer("");
+    setIsLoading(true);
+    try {
+      const result = await askAssistant(prompt);
+      setAnswer(result.answer);
+    } catch (requestError) {
+      setError(requestError.message || "The AI assistant is unavailable.");
+    } finally {
+      setIsLoading(false);
     }
-
   }
 
   return (
-
     <div className="chat-box">
-
       <h2>🤖 AI Civic Assistant</h2>
-
       <input
         type="text"
-        placeholder="Ask anything about government schemes..."
+        placeholder="Ask about government schemes..."
         value={question}
-        onChange={(e)=>setQuestion(e.target.value)}
+        maxLength={2000}
+        onChange={(event) => setQuestion(event.target.value)}
       />
-
-      <button onClick={askAI}>
-        Ask AI
+      <button onClick={askAI} disabled={isLoading || !question.trim()}>
+        {isLoading ? "Asking..." : "Ask AI"}
       </button>
-
-      <br /><br />
-
-      <p>{answer}</p>
-
+      {error && <p role="alert">{error}</p>}
+      {answer && <p role="status">{answer}</p>}
     </div>
-
   );
-
 }
 
 export default ChatBot;

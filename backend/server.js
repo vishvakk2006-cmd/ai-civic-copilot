@@ -1,198 +1,189 @@
-import express from "express";
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import process from "node:process";
 import cors from "cors";
-
-import schemes from "./data/schemes.json" with { type: "json" };
-import { checkEligibility } from "./services/eligibilityEngine.js";
-import { rankSchemes } from "./services/recommendationEngine.js";
-import { generateExplanation } from "./services/explanationEngine.js";
-import { evaluateRule } from "./services/ruleInterpreter.js";
+import express from "express";
+import documentRoutes from "./routes/documentRoutes.js";
+import schemeRoutes from "./routes/schemes.js";
 import { checkMissingDocuments } from "./services/documentEngine.js";
-import { calculateApprovalProbability } from "./services/approvalEngine.js";
-import upload from "./services/uploadEngine.js";
+import { generateExplanation } from "./services/explanationEngine.js";
+import { askGemini } from "./services/geminiService.js";
+import { checkEligibility, findIncompleteSchemes } from "./services/eligibilityEngine.js";
+import { rankSchemes } from "./services/recommendationEngine.js";
+import { evaluateRule } from "./services/ruleInterpreter.js";
 
-import { extractText } from "./services/ocrService.js";
-import { parseCitizenData } from "./services/documentParser.js";
-
-
+const envPath = fileURLToPath(new URL("./.env", import.meta.url));
+if (existsSync(envPath)) {
+    process.loadEnvFile(envPath);
+}
 
 const app = express();
+const port = Number(process.env.PORT) || 5000;
+const allowedOrigins = (process.env.FRONTEND_URL || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 
-app.use(cors());
-app.use(express.json());
+if (process.env.NODE_ENV !== "production") {
+    allowedOrigins.push("http://localhost:5173", "http://127.0.0.1:5173");
+}
 
-const PORT = process.env.PORT || 5000;
-// ======================
-// Home
-// ======================
+app.use(
+    cors({
+        origin(origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+                return;
+            }
+            callback(new Error("Origin is not allowed by CORS."));
+        }
+    })
+);
+app.use(express.json({ limit: "32kb" }));
+
 app.get("/", (req, res) => {
-    res.send("AI Civic Copilot Backend Running 🚀");
+    res.send("AI Civic Copilot Backend Running");
 });
 
-// ======================
-// Health Check
-// ======================
+app.get("/healthz", (req, res) => {
+    res.json({ status: "ok" });
+});
+
 app.get("/message", (req, res) => {
-    res.json({
-        message: "AI Civic Copilot Backend Running"
-    });
+    res.json({ message: "AI Civic Copilot Backend Running" });
 });
 
-// ======================
-// Get All Schemes
-// ======================
-app.get("/schemes", (req, res) => {
-    res.json(schemes);
-});
+app.use("/api", documentRoutes);
+app.use("/api/schemes", schemeRoutes);
+app.use("/schemes", schemeRoutes);
 
-// ======================
-// Get Scheme by ID
-// ======================
-app.get("/schemes/:id", (req, res) => {
-
-    const scheme = schemes.find(
-        s => s.scheme_id === req.params.id
-    );
-
-    if (!scheme) {
-        return res.status(404).json({
-            message: "Scheme not found"
-        });
-    }
-
-    res.json(scheme);
-
-});
-   app.post("/api/upload", upload.single("document"), async (req, res) => {
-
-    if (!req.file) {
-
+app.post("/api/eligibility", (req, res) => {
+    const citizen = req.body;
+    if (!citizen || typeof citizen !== "object" || Array.isArray(citizen)) {
         return res.status(400).json({
             success: false,
-            message: "No file uploaded"
+            message: "Citizen details must be sent as a JSON object."
         });
-
     }
 
-    try {
-
-        const ocrResult = await extractText(req.file.path);
-        console.log("===== OCR TEXT =====");
-        console.log(ocrResult.text);
-        console.log("====================");
-
-        if (!ocrResult.success) {
-
-            return res.status(500).json({
+    for (const field of ["age", "annual_household_income", "child_age"]) {
+        if (
+            citizen[field] !== undefined &&
+            (!Number.isFinite(citizen[field]) || citizen[field] < 0)
+        ) {
+            return res.status(400).json({
                 success: false,
-                message: "OCR failed"
+                message: `${field} must be a non-negative number.`
             });
-
         }
-
-        const extractedData = parseCitizenData(
-            ocrResult.text
-        ); 
-        console.log("===== PARSED DATA =====");
-        console.log(extractedData);
-        console.log("=======================");
-
-        res.json({
-
-            success: true,
-
-            filename: req.file.filename,
-
-            confidence: ocrResult.confidence,
-
-            extractedData
-
-        });
-
     }
 
-    catch (err) {
+    for (const field of [
+        "is_landholder",
+        "has_active_bank_savings_account"
+    ]) {
+        if (
+            citizen[field] !== undefined &&
+            typeof citizen[field] !== "boolean"
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: `${field} must be true or false.`
+            });
+        }
+    }
 
-        console.error(err);
-
-        res.status(500).json({
-
+    if (
+        citizen.provided_documents !== undefined &&
+        (!Array.isArray(citizen.provided_documents) ||
+            !citizen.provided_documents.every(
+                (document) => typeof document === "string"
+            ))
+    ) {
+        return res.status(400).json({
             success: false,
-
-            message: err.message
-
+            message: "provided_documents must be a list of document names."
         });
-
     }
 
+    const eligibleSchemes = rankSchemes(checkEligibility(citizen)).map(
+        (scheme) => ({
+            ...scheme,
+            explanation: generateExplanation(citizen, scheme, evaluateRule),
+            missing_documents: checkMissingDocuments(citizen, scheme)
+        })
+    );
+
+    return res.json({
+        success: true,
+        totalEligible: eligibleSchemes.length,
+        schemes: eligibleSchemes,
+        incompleteSchemes: findIncompleteSchemes(citizen)
+    });
 });
 
-
-// ======================
-// Eligibility API
-// ======================
-app.post("/api/eligibility", (req, res) => {
-
-    console.log("========== API HIT ==========");
-    console.log("Incoming Citizen:");
-    console.log(req.body);
+app.post("/api/chat", async (req, res) => {
+    const question =
+        typeof req.body?.question === "string" ? req.body.question.trim() : "";
+    if (!question || question.length > 2000) {
+        return res.status(400).json({
+            success: false,
+            message: "Enter a question of 1 to 2000 characters."
+        });
+    }
 
     try {
-
-        const citizen = req.body;
-
-        const eligibleSchemes = checkEligibility(citizen);
-
-        console.log("Eligible Schemes:");
-        console.log(eligibleSchemes);
-
-        const recommendedSchemes = rankSchemes(eligibleSchemes);
-
-        const finalSchemes = recommendedSchemes.map((scheme) => ({
-
-    ...scheme,
-
-        approval_probability: calculateApprovalProbability(
-            citizen,
-            scheme
-        ),
-
-        explanation: generateExplanation(
-            citizen,
-            scheme,
-            evaluateRule
-        ),
-
-        missing_documents: checkMissingDocuments(
-            citizen,
-            scheme
-        )
-
-    }));
-
-        console.log("Recommended Schemes:");
-        console.log(recommendedSchemes);
-
-        res.json({
-        success: true,
-        citizen,
-        totalEligible: finalSchemes.length,
-        schemes: finalSchemes
-    });
-
+        const answer = await askGemini(question);
+        return res.json({ success: true, answer });
     } catch (error) {
-
-        console.error("SERVER ERROR:");
-        console.error(error);
-
-        res.status(500).json({
+        if (error.statusCode === 503) {
+            return res.status(503).json({
+                success: false,
+                message: error.message
+            });
+        }
+        console.error("AI assistant request failed:", error.message);
+        return res.status(error.statusCode || 502).json({
             success: false,
-            message: error.message
+            message: error.statusCode
+                ? error.message
+                : "The AI assistant could not complete the request. Please try again."
         });
-
     }
-
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+app.use((req, res) => {
+    res.status(404).json({ message: "Endpoint not found." });
+});
+
+app.use((error, req, res, next) => {
+    if (res.headersSent) {
+        next(error);
+        return;
+    }
+
+    if (error.code === "LIMIT_FILE_SIZE") {
+        return res.status(413).json({
+            success: false,
+            message: "The document is too large. Maximum file size is 10 MB."
+        });
+    }
+    if (error.message === "Origin is not allowed by CORS.") {
+        return res.status(403).json({ message: error.message });
+    }
+    if (error.status === 400 && error.type === "entity.parse.failed") {
+        return res.status(400).json({ message: "Invalid JSON request body." });
+    }
+    if (error.message === "Upload a JPG, PNG, or PDF document.") {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+
+    console.error("Request failed:", error.message);
+    return res.status(500).json({
+        message: "The server could not complete the request."
+    });
+});
+
+app.listen(port, "0.0.0.0", () => {
+    console.log(`AI Civic Copilot backend listening on port ${port}.`);
 });
